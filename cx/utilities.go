@@ -286,9 +286,9 @@ func getFormattedParam(params []*CXArgument, pkg *CXPackage, buf *bytes.Buffer) 
 	}
 }
 
-// printImports is an auxiliary function for `toString`. It returns all the
-// imported packages of `pkg`.
-func printImports(pkg *CXPackage, ast *string) {
+// buildStrImports is an auxiliary function for `toString`. It builds
+// string representation all the imported packages of `pkg`.
+func buildStrImports(pkg *CXPackage, ast *string) {
 	if len(pkg.Imports) > 0 {
 		*ast += "\tImports"
 	}
@@ -298,9 +298,9 @@ func printImports(pkg *CXPackage, ast *string) {
 	}
 }
 
-// printGlobals is an auxiliary function for `toString`. It returns all the
-// global variables of `pkg`.
-func printGlobals(pkg *CXPackage, ast *string) {
+// buildStrGlobals is an auxiliary function for `toString`. It builds
+// string representation of all the global variables of `pkg`.
+func buildStrGlobals(pkg *CXPackage, ast *string) {
 	if len(pkg.Globals) > 0 {
 		*ast += "\tGlobals"
 	}
@@ -320,9 +320,9 @@ func SignatureStringOfStruct(s *CXStruct) string {
 	return fmt.Sprintf("%s struct {%s }", s.Name, fields)
 }
 
-// printStructs is an auxiliary function for `toString`. It returns all the
-// structures defined in `pkg`.
-func printStructs(pkg *CXPackage, ast *string) {
+// buildStrStructs is an auxiliary function for `toString`. It builds
+// string representation of all the structures defined in `pkg`.
+func buildStrStructs(pkg *CXPackage, ast *string) {
 	if len(pkg.Structs) > 0 {
 		*ast += "\tStructs"
 	}
@@ -348,9 +348,9 @@ func SignatureStringOfFunction(pkg *CXPackage, f *CXFunction) string {
 		f.Name, ins.String(), outs.String())
 }
 
-// printFunctions is an auxiliary function for `toString`. It returns all the
-// functions defined in `pkg`.
-func printFunctions(pkg *CXPackage, ast *string) {
+// buildStrFunctions is an auxiliary function for `toString`. It builds
+// string representation of all the functions defined in `pkg`.
+func buildStrFunctions(pkg *CXPackage, ast *string) {
 	if len(pkg.Functions) > 0 {
 		*ast += "\tFunctions"
 	}
@@ -432,9 +432,9 @@ func printFunctions(pkg *CXPackage, ast *string) {
 	}
 }
 
-// printPackages is an auxiliary function for `ToString`. It starts the
-// process of returning string format of the abstract syntax tree of a CX program.
-func printPackages(prgrm *CXProgram, ast *string) {
+// buildStrPackages is an auxiliary function for `ToString`. It starts the
+// process of building string format of the abstract syntax tree of a CX program.
+func buildStrPackages(prgrm *CXProgram, ast *string) {
 	// We need to declare the counter outside so we can
 	// ignore the increments from core or stdlib packages.
 	var i int
@@ -445,10 +445,10 @@ func printPackages(prgrm *CXProgram, ast *string) {
 
 		*ast += fmt.Sprintf("%d.- Package: %s\n", i, pkg.Name)
 
-		printImports(pkg, ast)
-		printGlobals(pkg, ast)
-		printStructs(pkg, ast)
-		printFunctions(pkg, ast)
+		buildStrImports(pkg, ast)
+		buildStrGlobals(pkg, ast)
+		buildStrStructs(pkg, ast)
+		buildStrFunctions(pkg, ast)
 
 		i++
 	}
@@ -481,7 +481,7 @@ func (prgrm *CXProgram) ToString() string {
 		currentFunction = fn
 	}
 
-	printPackages(prgrm, &ast)
+	buildStrPackages(prgrm, &ast)
 
 	// Restoring a program's state (what package and function were
 	// selected.)
